@@ -11,7 +11,7 @@ import { style } from '@angular/animations';
 import { RowNode } from 'ag-grid-community';
 
 interface MyType {
-  [key: number]: any;
+  [key: string]: any;
 }
 
 
@@ -33,13 +33,18 @@ export class ResultsComponent implements OnInit {
   resultsData: ORDSData = new ORDSData;
   yearRoundData: ORDSData = new ORDSData;
   tempData: ORDSData = new ORDSData;
+  pinnedTopRowData: any;
   multiSortKey;
-  private gridApi;
-  private gridColumnApi;
-  private heightPx: number;
-  private yearType: number = 2019;
-  private pinnedTopRowData;
-  private menuObj: MyType = {};
+   gridApi;
+   gridColumnApi;
+   heightPx: number;
+  yearType: number = 0;
+   roundType: number = 0;
+ // private menuObj: MyType = {};
+  menuObj = new Map();
+  objectKeys = Object.keys;
+  menuButtonText = "Default";
+
 
 
 
@@ -52,7 +57,7 @@ constructor(private hds: ORDSDataService) {
       { headerName: 'RId', field: 'rid', hide: true },
       { headerName: 'Year', field: 'year', hide: true },
       { headerName: 'Round', field: 'round', hide: true },
-      { headerName: 'A', field: 'col_1', rowDrag: true, suppressMovable: true },
+      { headerName: 'A', field: 'col_1' },
       { headerName: 'B', field: 'col_2' },
       { headerName: 'C', field: 'col_3'},
       { headerName: 'D', field: 'col_4' },
@@ -71,13 +76,15 @@ constructor(private hds: ORDSDataService) {
       { headerName: 'Q', field: 'col_17' }
     ];
 
-  this.defaultColDef = { resizable: true, sortable: true, filter: true };
+  this.defaultColDef = { resizable: true, sortable: false, filter: false };
   this.multiSortKey = 'ctrl';
+  this.pinnedTopRowData = [];
 
 
+  }
 
-
-  
+  getMenuObjKeys(): Array<MyType>{
+    return Array.from(this.menuObj.keys());
 
   }
 
@@ -92,8 +99,6 @@ constructor(private hds: ORDSDataService) {
     });
     this.gridColumnApi.autoSizeColumns(allColumnIds);
   }
-  
-
 
   onGridReady(params) {
     let allColumnIds = [];
@@ -102,6 +107,11 @@ constructor(private hds: ORDSDataService) {
     this.gridColumnApi = params.columnApi;
 
   }
+
+  changeYrRndBtn() {
+    this.menuButtonText = "Year: " + this.yearType + " / Round: " + this.roundType;
+  }
+
   saveToCSV() {
     let params = {
       skipHeader: true,
@@ -126,24 +136,52 @@ constructor(private hds: ORDSDataService) {
 }
 
   doesExternalFilterPass = (node: RowNode): boolean => {
-
-    switch (this.yearType) {
-      case 2019: return node.data.year == 2019 && node.data.round == 1;
-      case 2018: return node.data.year == 2018 && node.data.round == 1;
-      case 2017: return node.data.year == 2017 && node.data.round == 1;
-      case 2016: return node.data.year == 2016 && node.data.round == 1;
-      case 2015: return node.data.year == 2015 && node.data.round == 1;
-      default: return true;
-    }
+    return node.data.year == this.yearType && node.data.round == this.roundType;
   }
 
-  externalFilterChanged(newValue) {
+  externalFilterChanged(newYear, newRound) {
 //    console.log('inside externalFil...' + newValue);
-    this.yearType = newValue;
+    this.yearType = newYear;
+    this.roundType = newRound;
+    this.changeYrRndBtn();
     this.gridApi.onFilterChanged();
   }
 
-  async getRusultsData(year: number, round: number) {
+  getNewYearRound(newYear, newRound) {
+    //    console.log('inside externalFil...' + newValue);
+    this.yearType = newYear;
+    this.roundType = newRound;
+    this.changeYrRndBtn();
+    this.getYearRoundResultsData(newYear, newRound);
+  }
+
+ 
+  async getAllYearsRounds() {
+
+    let firstTime = true;
+
+    
+    this.yearRoundData = await this.hds.getAllORDSData('YEARSROUNDSALL', 0, 500, 0, 0)
+      .toPromise();
+    for (let value of this.yearRoundData.items) {
+      if (!this.menuObj.has(value.year)) {
+        this.menuObj.set(value.year, []);
+      }
+      if (firstTime) {
+        firstTime = false;
+        this.yearType = value.year;
+        this.roundType = value.round;
+        this.changeYrRndBtn();
+      }
+     
+      this.menuObj.set(value.year, this.menuObj.get(value.year).concat(value.round));
+ 
+    }
+ 
+ 
+  }
+
+ async getAllRusultsData() {
     this.tempData.hasMore = true;
     let offset: number = this.offset;
     let limit: number = this.limit;
@@ -152,7 +190,7 @@ constructor(private hds: ORDSDataService) {
 
     while (this.tempData.hasMore && times < 10) {
       times += 1;
-      this.tempData = await this.hds.getAllORDSData('RESULTSALL', offset, limit, year, round)
+      this.tempData = await this.hds.getAllORDSData('RESULTSALL', offset, limit, 0, 0)
         .toPromise();
       if (offset > 0) {
         this.resultsData.items = this.resultsData.items.concat(this.tempData.items);
@@ -164,30 +202,42 @@ constructor(private hds: ORDSDataService) {
     }
   }
 
-  async getAllYearsRounds() {
+  async getYearRoundResultsData(year: number, round: number) {
 
-    let offset: number = 0;
-    let limit: number = 500;
+    this.tempData.hasMore = true;
+    let offset: number = this.offset;
+    let limit: number = this.limit;
+    let i: number = 0;
 
     let times: number = 0;
 
-    
-    this.yearRoundData = await this.hds.getAllORDSData('YEARSROUNDS', 0, 500, 0, 0)
-      .toPromise();
-    for (let value of this.yearRoundData.items) {
-      if (this.menuObj[value.year] === undefined) {
-        this.menuObj[value.year] = [];
+    while (this.tempData.hasMore && times < 10) {
+      times += 1;
+      this.tempData = await this.hds.getAllORDSData('RESULTSYEARROUND', offset, limit, year, round)
+        .toPromise();
+      if (offset > 0) {
+        this.resultsData.items = this.resultsData.items.concat(this.tempData.items);
       }
-      this.menuObj[value.year].push(value.round);
+      else {
+        this.resultsData = this.tempData;
+      }
+      offset += limit;
     }
-  
+    this.pinnedTopRowData = [];
+    for (i = 0; i < 3; i++) {
+      this.pinnedTopRowData.push(this.resultsData.items[i]);
+    }
+    this.resultsData.items.splice(0, 3, 0);
+
   }
 
   
   async ngOnInit() {
 
-    this.getRusultsData(2019, 1);
+//    this.getAllRusultsData();
     await this.getAllYearsRounds();
+    this.getYearRoundResultsData(this.yearType, this.roundType);
+
   }
 
 

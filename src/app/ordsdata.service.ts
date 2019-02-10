@@ -20,10 +20,15 @@ export class ORDSDataService {
         this.urlStr = 'https://apex.oracle.com/pls/apex/census_epd/bxsc/allResults?offset=' + offset + '&limit=' + limit;
         break;
       }
-      case 'YEARSROUNDS': {
+      case 'YEARSROUNDSALL': {
         this.urlStr = 'https://apex.oracle.com/pls/apex/census_epd/bxsc/getAllYearsRounds';
         break;
       }
+      case 'RESULTSYEARROUND': {
+        this.urlStr = 'https://apex.oracle.com/pls/apex/census_epd/bxsc/getResultsByYearRound/' + year + '/' + round;
+        break;
+      }
+
       default: {
         //statements; 
         break;

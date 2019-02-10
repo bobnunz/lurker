@@ -7,6 +7,13 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ResultsComponent } from './results/results.component';
 import { AgGridModule } from 'ag-grid-angular';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTabsModule } from '@angular/material/tabs';
+
+import { TabViewModule } from 'primeng/tabview';
+import { MatMenuModule } from '@angular/material/menu'; 
+
+
 
 @NgModule({
   declarations: [
@@ -18,7 +25,11 @@ import { AgGridModule } from 'ag-grid-angular';
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    AgGridModule.withComponents([])
+    AgGridModule.withComponents([]),
+    MatToolbarModule,
+    MatTabsModule,
+    TabViewModule,
+    MatMenuModule
   ],
   providers: [],
   bootstrap: [AppComponent]

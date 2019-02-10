@@ -13,10 +13,22 @@ export class ORDSDataService {
 
   constructor(private http: HttpClient) { }
 
-  getAllORDSData(offset: number, limit: number): Observable<ORDSData> {
+  getAllORDSData(dataType: string, offset: number, limit: number, year: number, round: number): Observable<ORDSData> {
 
-  
-    this.urlStr = 'https://apex.oracle.com/pls/apex/census_epd/bxsc/allResults?offset=' + offset + '&limit=' + limit;
+    switch (dataType) {
+      case 'RESULTSALL': {
+        this.urlStr = 'https://apex.oracle.com/pls/apex/census_epd/bxsc/allResults?offset=' + offset + '&limit=' + limit;
+        break;
+      }
+      case 'YEARSROUNDS': {
+        this.urlStr = 'https://apex.oracle.com/pls/apex/census_epd/bxsc/getAllYearsRounds';
+        break;
+      }
+      default: {
+        //statements; 
+        break;
+      }
+    }  
  
     return this.http.
       get<ORDSData>(this.urlStr);

@@ -1,52 +1,83 @@
 
-<div style="height: 100%; padding-top: 137px; box-sizing: border-box;">
-  <ag-grid-angular #agGrid
-                   style="width: 100%; height: 100%"
-                   [rowDragManaged]="true"
-                   class="ag-theme-fresh"
-                   [animateRows]="true"
-                   [defaultColDef]="defaultColDef"
-                   [multiSortKey]="multiSortKey"
-                   [suppressHorizontalScroll]="false"
-                   rowSelection="multiple"
-                   id="mygrid"
-                   [rowData]="resultsData.items"
-                   [columnDefs]="columnDefs"
-                   [isExternalFilterPresent]="isExternalFilterPresent"
-                   [doesExternalFilterPass]="doesExternalFilterPass"
-                   (gridReady)="onGridReady($event)">
+<link rel="stylesheet" type="text/css" href="/node_modules/primeicons/primeicons.css" />
+<link rel="stylesheet" type="text/css" href="/node_modules/primeng/resources/themes/nova-light/theme.css" />
+<link rel="stylesheet" type="text/css" href="/node_modules/primeng/resources/primeng.min.css" />
 
-  </ag-grid-angular>
+
+<mat-tab-group id="mainTabs" style="width: 100%; height: 100%">
+
+  <mat-tab label="Results">
+    <ng-template matTabContent>
+    
+      <!--
+        <p-tabView id="mainTabs" >
+          <p-tabPanel id="mpTabs" header="Results" style="width: 100%; height: 100%">
+
+      <ng-template pTemplate="content">
+      -->
+      <div style="height: 100%; padding-top: 205px; box-sizing: border-box;">
+        <ag-grid-angular #agGrid
+                         style="width: 100%; height: 100%"
+                         [rowDragManaged]="true"
+                         class="ag-theme-fresh"
+                         [animateRows]="true"
+                         [defaultColDef]="defaultColDef"
+                         [multiSortKey]="multiSortKey"
+                         [suppressHorizontalScroll]="false"
+                         rowSelection="multiple"
+                         id="mygrid"
+                         [rowData]="resultsData.items"
+                         [columnDefs]="columnDefs"
+                         [isExternalFilterPresent]="isExternalFilterPresent"
+                         [doesExternalFilterPass]="doesExternalFilterPass"
+                         (gridReady)="onGridReady($event)">
+
+        </ag-grid-angular>
+      </div>
+      <div style="position: absolute; top: 5px; left: 5px; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 13px;">
+        <mat-toolbar>Box Score Lurker Site - Results</mat-toolbar>
+
+        <div style="padding-bottom: 4px;">
+          <!--
+            <label> File Name: <input type="text" id="fileName" /> </label>
+            <label style="margin-left: 20px;">
+              Separator <input type="text" style="width: 20px;" id="columnSeparator" />
+            </label>
+  -->
+          <label>{{yearRoundData.items.length}}</label>
+          <label style="margin-left: 20px;">
+            <button mat-button [matMenuTriggerFor]="menu">Year</button>
+            <mat-menu #menu="matMenu"  >
+                <button mat-menu-item value=2019 (click)="externalFilterChanged(2019)">2019</button>
+            </mat-menu>
+          </label>
+          <label style="margin-left: 20px;"> <button (click)="saveToCSV()">Export to CSV</button> </label>
+          <label style="margin-left: 20px;"> <button (click)="sizeToFit()">Size to Fit</button> </label>
+          <label style="margin-left: 20px;"> <button (click)="autoSize()">Autosize</button> </label>
 </div>
-<div style="position: absolute; top: 5px; left: 5px; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 13px;">
-  <div style="padding-bottom: 4px;">
-    <label> File Name: <input type="text" id="fileName" /> </label>
-    <label style="margin-left: 20px;">
-      Separator <input type="text" style="width: 20px;" id="columnSeparator" />
-    </label>
-    <label style="margin-left: 20px;"> <button (click)="onBtExport()">Export to CSV</button> </label>
-    <label style="margin-left: 20px;"> <button (click)="sizeToFit()">Size to Fit</button> </label>
-    <label style="margin-left: 20px;"> <button (click)="autoSize()">Autosize</button> </label>
-  </div>
-  <div class="test-container">
-    <div class="test-header">
-      <label>
-        <input type="radio" name="filter" value=2019 (change)="externalFilterChanged(2019)" /> 2019
-      </label>
-      <label style="padding-left: 30px;">
-        <input type="radio" name="filter" value=2018 (change)="externalFilterChanged(2018)" /> 2018
-      </label>
-      <label style="padding-left: 30px;">
-        <input type="radio" name="filter" value=2017 (change)="externalFilterChanged(2017)" /> 2017
-      </label>
-      <label style="padding-left: 30px;">
-        <input type="radio" name="filter" value=2016 (change)="externalFilterChanged(2016)" /> 2016
-      </label>
-      <label style="padding-left: 30px;">
-        <input type="radio" name="filter" value=2015 (change)="externalFilterChanged(2015)" /> 2015
-      </label>
+
+
+
+        <!--
+    <div class="test-container">
+      <div class="test-header">
+        <label>
+          <input type="radio" name="filter" value=2019 (change)="externalFilterChanged(2019)" /> 2019
+        </label>
+        <label style="padding-left: 30px;">
+          <input type="radio" name="filter" value=2018 (change)="externalFilterChanged(2018)" /> 2018
+        </label>
+        <label style="padding-left: 30px;">
+          <input type="radio" name="filter" value=2017 (change)="externalFilterChanged(2017)" /> 2017
+        </label>
+        <label style="padding-left: 30px;">
+          <input type="radio" name="filter" value=2016 (change)="externalFilterChanged(2016)" /> 2016
+        </label>
+        <label style="padding-left: 30px;">
+          <input type="radio" name="filter" value=2015 (change)="externalFilterChanged(2015)" /> 2015
+        </label>
+      </div>
     </div>
-  </div>
 
 
   <table>
@@ -54,17 +85,14 @@
       <tr>
         <td valign="top">
           <label style="margin-right: 20px;">
-            <!--
-                        <mat-checkbox>Check me!</mat-checkbox>
-            -->
-          </label>
-          <br />
-          <label style="margin-right: 20px;">
-            <input type="checkbox" id="useSpecificColumns" /> Specify Columns
-          </label>
-          <br />
-          <label style="margin-right: 20px;"> <input type="checkbox" id="allColumns" /> All Columns </label> <br />
-          <label style="margin-right: 20px;"> <input type="checkbox" id="onlySelected" /> Only Selected </label>
+        </label>
+        <br />
+        <label style="margin-right: 20px;">
+          <input type="checkbox" id="useSpecificColumns" /> Specify Columns
+        </label>
+        <br />
+        <label style="margin-right: 20px;"> <input type="checkbox" id="allColumns" /> All Columns </label> <br />
+        <label style="margin-right: 20px;"> <input type="checkbox" id="onlySelected" /> Only Selected </label>
         </td>
         <td valign="top">
           <label style="margin-right: 20px;"> <input type="checkbox" id="customHeader" /> Custom Header </label>
@@ -93,7 +121,20 @@
             <input type="checkbox" id="skipPinnedBottom" /> Skip Pinned Bottom
           </label>
         </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+        </tr>
+        </tbody>
+        </table>
+        -->
+      </div>
+
+      <!--    </ng-template>
+            </p-tabPanel>
+
+            </p-tabView>
+      -->
+
+    </ng-template>
+  </mat-tab>
+
+</mat-tab-group>
+

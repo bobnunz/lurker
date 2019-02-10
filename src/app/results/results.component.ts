@@ -10,6 +10,10 @@ import { Element } from '@angular/compiler/src/render3/r3_ast';
 import { style } from '@angular/animations';
 import { RowNode } from 'ag-grid-community';
 
+interface MyType {
+  [key: number]: any;
+}
+
 
 @Component({
   selector: 'app-results',
@@ -27,17 +31,20 @@ export class ResultsComponent implements OnInit {
   columnDefs: any[];
   defaultColDef: any;
   resultsData: ORDSData = new ORDSData;
+  yearRoundData: ORDSData = new ORDSData;
   tempData: ORDSData = new ORDSData;
   multiSortKey;
   private gridApi;
   private gridColumnApi;
   private heightPx: number;
   private yearType: number = 2019;
+  private pinnedTopRowData;
+  private menuObj: MyType = {};
 
 
 
 
-  constructor(private hds: ORDSDataService) {
+constructor(private hds: ORDSDataService) {
 
     // define grid columns
 
@@ -64,10 +71,13 @@ export class ResultsComponent implements OnInit {
       { headerName: 'Q', field: 'col_17' }
     ];
 
-    this.defaultColDef = { resizable: true, sortable: true, filter: true };
+  this.defaultColDef = { resizable: true, sortable: true, filter: true };
+  this.multiSortKey = 'ctrl';
 
 
-    this.multiSortKey = 'ctrl';
+
+
+  
 
   }
 
@@ -91,9 +101,8 @@ export class ResultsComponent implements OnInit {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
 
-
   }
-  saveToCsv() {
+  saveToCSV() {
     let params = {
       skipHeader: true,
       columnGroups: false,
@@ -107,7 +116,7 @@ export class ResultsComponent implements OnInit {
       fileName: "nunz"
 
     };
-    console.log("inside export");
+//    console.log("inside export");
     this.gridApi.exportDataAsCsv(params);
 
   }
@@ -129,13 +138,12 @@ export class ResultsComponent implements OnInit {
   }
 
   externalFilterChanged(newValue) {
-    console.log('inside externalFil...' + newValue);
+//    console.log('inside externalFil...' + newValue);
     this.yearType = newValue;
     this.gridApi.onFilterChanged();
   }
-  
-  async ngOnInit() {
 
+  async getRusultsData(year: number, round: number) {
     this.tempData.hasMore = true;
     let offset: number = this.offset;
     let limit: number = this.limit;
@@ -144,7 +152,7 @@ export class ResultsComponent implements OnInit {
 
     while (this.tempData.hasMore && times < 10) {
       times += 1;
-      this.tempData = await this.hds.getAllORDSData( offset, limit )
+      this.tempData = await this.hds.getAllORDSData('RESULTSALL', offset, limit, year, round)
         .toPromise();
       if (offset > 0) {
         this.resultsData.items = this.resultsData.items.concat(this.tempData.items);
@@ -154,7 +162,32 @@ export class ResultsComponent implements OnInit {
       }
       offset += limit;
     }
-   
+  }
+
+  async getAllYearsRounds() {
+
+    let offset: number = 0;
+    let limit: number = 500;
+
+    let times: number = 0;
+
+    
+    this.yearRoundData = await this.hds.getAllORDSData('YEARSROUNDS', 0, 500, 0, 0)
+      .toPromise();
+    for (let value of this.yearRoundData.items) {
+      if (this.menuObj[value.year] === undefined) {
+        this.menuObj[value.year] = [];
+      }
+      this.menuObj[value.year].push(value.round);
+    }
+  
+  }
+
+  
+  async ngOnInit() {
+
+    this.getRusultsData(2019, 1);
+    await this.getAllYearsRounds();
   }
 
 

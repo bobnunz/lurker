@@ -43,11 +43,7 @@ export class ResultsComponent implements OnInit {
  // private menuObj: MyType = {};
   menuObj = new Map();
   objectKeys = Object.keys;
-  menuButtonText = "Default";
-
-
-
-
+  menuButtonText ;
 
 constructor(private hds: ORDSDataService) {
 
@@ -74,23 +70,36 @@ constructor(private hds: ORDSDataService) {
       { headerName: 'O', field: 'col_15' },
       { headerName: 'P', field: 'col_16' },
       { headerName: 'Q', field: 'col_17' }
-    ];
+  ];
+
+  // define default columns
 
   this.defaultColDef = { resizable: true, sortable: false, filter: false };
+
+  // set the control key to use for multi-column sorting
+
   this.multiSortKey = 'ctrl';
+
+  //array to hold top frozen rows
+
   this.pinnedTopRowData = [];
 
 
   }
+
+  // function used in the html template code to get the years for the nested button menu (material)
 
   getMenuObjKeys(): Array<MyType>{
     return Array.from(this.menuObj.keys());
 
   }
 
+  // called from button click to size the collumns to fit on the screen (ag-grid)
+
   sizeToFit() {
     this.gridApi.sizeColumnsToFit();
   }
+   // called from button click to autosize all collumns (ag-grid)
 
   autoSize(params) {
     var allColumnIds = [];
@@ -100,6 +109,8 @@ constructor(private hds: ORDSDataService) {
     this.gridColumnApi.autoSizeColumns(allColumnIds);
   }
 
+// ag-grid callback? that gets called sometime after ngOnInit
+
   onGridReady(params) {
     let allColumnIds = [];
 
@@ -108,9 +119,13 @@ constructor(private hds: ORDSDataService) {
 
   }
 
+  // set the button text to show the year and round displayed
+
   changeYrRndBtn() {
     this.menuButtonText = "Year: " + this.yearType + " / Round: " + this.roundType;
   }
+
+  // save screen to cvs file from button click
 
   saveToCSV() {
     let params = {
@@ -126,37 +141,47 @@ constructor(private hds: ORDSDataService) {
       fileName: "nunz"
 
     };
-//    console.log("inside export");
+
+  // ag-grid call to save as csv
+
     this.gridApi.exportDataAsCsv(params);
 
   }
 
+  // ag-grid  option to notify grid there is an external filter (disabled)
+  /*
   isExternalFilterPresent (): boolean {
   return true;
 }
-
+*/ 
   doesExternalFilterPass = (node: RowNode): boolean => {
     return node.data.year == this.yearType && node.data.round == this.roundType;
   }
 
+  // ag-grid - called from html templte when user makes selection (disabled)
+  /*
   externalFilterChanged(newYear, newRound) {
-//    console.log('inside externalFil...' + newValue);
+
     this.yearType = newYear;
     this.roundType = newRound;
     this.changeYrRndBtn();
     this.gridApi.onFilterChanged();
   }
+*/
+
+  // user selected year/round - click event from menu button
 
   getNewYearRound(newYear, newRound) {
-    //    console.log('inside externalFil...' + newValue);
+
     this.yearType = newYear;
     this.roundType = newRound;
     this.changeYrRndBtn();
     this.getYearRoundResultsData(newYear, newRound);
   }
 
- 
-  async getAllYearsRounds() {
+  // get all valid years/rounds to populate menu button
+
+   async getAllYearsRounds() {
 
     let firstTime = true;
 
@@ -181,6 +206,10 @@ constructor(private hds: ORDSDataService) {
  
   }
 
+
+//  get all reults for all years/rounds (disabled)
+
+  /*
  async getAllRusultsData() {
     this.tempData.hasMore = true;
     let offset: number = this.offset;
@@ -201,6 +230,10 @@ constructor(private hds: ORDSDataService) {
       offset += limit;
     }
   }
+
+*/
+
+// get row data for selected year and round
 
   async getYearRoundResultsData(year: number, round: number) {
 

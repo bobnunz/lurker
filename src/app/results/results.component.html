@@ -3,12 +3,19 @@
 <link rel="stylesheet" type="text/css" href="/node_modules/primeng/resources/themes/nova-light/theme.css" />
 <link rel="stylesheet" type="text/css" href="/node_modules/primeng/resources/primeng.min.css" />
 
+<!--
+external filter disabled
+                         [isExternalFilterPresent]="isExternalFilterPresent"
+                         [doesExternalFilterPass]="doesExternalFilterPass"
+
+    -->
+
 
 <mat-tab-group id="mainTabs" style="width: 100%; height: 100%">
 
   <mat-tab label="Results">
     <ng-template matTabContent>
-    
+
       <!--
         <p-tabView id="mainTabs" >
           <p-tabPanel id="mpTabs" header="Results" style="width: 100%; height: 100%">
@@ -29,8 +36,6 @@
                          [rowData]="resultsData.items"
                          [pinnedTopRowData]="pinnedTopRowData"
                          [columnDefs]="columnDefs"
-                         [isExternalFilterPresent]="isExternalFilterPresent"
-                         [doesExternalFilterPass]="doesExternalFilterPass"
                          (gridReady)="onGridReady($event)">
 
         </ag-grid-angular>
@@ -41,31 +46,31 @@
 
         <div style="padding-bottom: 4px;">
 
-            <label style="margin-left: 0px;">
+          <label style="margin-left: 0px;">
 
-              <button mat-button [matMenuTriggerFor]="main_menu">{{menuButtonText}}</button>
+            <button mat-button [matMenuTriggerFor]="main_menu">{{menuButtonText}}</button>
 
-              <mat-menu #main_menu="matMenu">
-                <ng-container *ngFor="let mainItem of getMenuObjKeys()">
-                  <button mat-menu-item [matMenuTriggerFor]="sub_menu" >{{ mainItem }}</button>
-                  <mat-menu #sub_menu="matMenu">
- <!--
-                    <button *ngFor="let subItem of menuObj.get(mainItem)" mat-menu-item (click)="externalFilterChanged(mainItem,subItem)">{{ subItem }}</button>
-  -->
-                    <button *ngFor="let subItem of menuObj.get(mainItem)" mat-menu-item (click)="getNewYearRound(mainItem,subItem)">{{ subItem }}</button>
+            <mat-menu #main_menu="matMenu">
+              <ng-container *ngFor="let mainItem of getMenuObjKeys()">
+                <button mat-menu-item [matMenuTriggerFor]="sub_menu">{{ mainItem }}</button>
+                <mat-menu #sub_menu="matMenu">
+                  <!--
+                                     <button *ngFor="let subItem of menuObj.get(mainItem)" mat-menu-item (click)="externalFilterChanged(mainItem,subItem)">{{ subItem }}</button>
+                   -->
+                  <button *ngFor="let subItem of menuObj.get(mainItem)" mat-menu-item (click)="getNewYearRound(mainItem,subItem)">{{ subItem }}</button>
 
-                  </mat-menu>
-                </ng-container>
-              </mat-menu>
+                </mat-menu>
+              </ng-container>
+            </mat-menu>
 
-            </label>
+          </label>
 
           <label style="margin-left: 20px;"> <button (click)="saveToCSV()">Export to CSV</button> </label>
           <label style="margin-left: 20px;"> <button (click)="sizeToFit()">Fit Columns to Screen</button> </label>
           <label style="margin-left: 20px;"> <button (click)="autoSize()">Autosize All Columns</button> </label>
           <p>Year: {{yearType}}  Round: {{roundType}}</p>
         </div>
-        </div>
+      </div>
     </ng-template>
   </mat-tab>
 

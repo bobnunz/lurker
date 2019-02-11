@@ -118,7 +118,7 @@ constructor(private hds: ORDSDataService) {
       columnGroups: false,
       skipFooters: true,
       skipGroups: true,
-      skipPinnedTop: true,
+      skipPinnedTop: false,
       skipPinnedBottom: true,
       allColumns: true,
       onlySelected: false,

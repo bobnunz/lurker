@@ -16,80 +16,55 @@ interface MyType {
 
 
 @Component({
-  selector: 'app-results',
-  templateUrl: './results.component.html',
-  styleUrls: ['./results.component.css']
-})
-export class ResultsComponent implements OnInit {
+  selector: 'app-bidding',
+  templateUrl: './bidding.component.html',
+  styleUrls: ['./bidding.component.css']})
+export class BiddingComponent implements OnInit {
 
 
   @ViewChild('agGrid') agGrid: AgGridNg2;
+  @Input() columnDefs: any[];
+  @Input() defaultColDef: any;
+  @Input() displayType: string;
 
   title = 'Boxscore Results';
   offset: number = 0;
   limit: number = 500;
-  columnDefs: any[];
-  defaultColDef: any;
-  resultsData: ORDSData = new ORDSData;
+
+  
+  screenData: ORDSData = new ORDSData;
   yearRoundData: ORDSData = new ORDSData;
   tempData: ORDSData = new ORDSData;
   pinnedTopRowData: any;
   multiSortKey;
-   gridApi;
-   gridColumnApi;
-   heightPx: number;
+  gridApi;
+  gridColumnApi;
+  heightPx: number;
   yearType: number = 0;
-   roundType: number = 0;
- // private menuObj: MyType = {};
+  roundType: number = 0;
+  // private menuObj: MyType = {};
   menuObj = new Map();
   objectKeys = Object.keys;
-  menuButtonText ;
+  menuButtonText;
+  toolBar: string;
 
-constructor(private hds: ORDSDataService) {
+  constructor(private hds: ORDSDataService) {
 
-    // define grid columns
+   
 
-    this.columnDefs = [
-      { headerName: 'RId', field: 'rid', hide: true },
-      { headerName: 'Year', field: 'year', hide: true },
-      { headerName: 'Round', field: 'round', hide: true },
-      { headerName: 'A', field: 'col_1' },
-      { headerName: 'B', field: 'col_2' },
-      { headerName: 'C', field: 'col_3'},
-      { headerName: 'D', field: 'col_4' },
-      { headerName: 'E', field: 'col_5' },
-      { headerName: 'F', field: 'col_6' },
-      { headerName: 'G', field: 'col_7' },
-      { headerName: 'H', field: 'col_8' },
-      { headerName: 'I', field: 'col_9' },
-      { headerName: 'J', field: 'col_10' },
-      { headerName: 'K', field: 'col_11' },
-      { headerName: 'L', field: 'col_12' },
-      { headerName: 'M', field: 'col_13' },
-      { headerName: 'N', field: 'col_14' },
-      { headerName: 'O', field: 'col_15' },
-      { headerName: 'P', field: 'col_16' },
-      { headerName: 'Q', field: 'col_17' }
-  ];
+    // set the control key to use for multi-column sorting
 
-  // define default columns
+    this.multiSortKey = 'ctrl';
 
-  this.defaultColDef = { resizable: true, sortable: false, filter: false };
+    //array to hold top frozen rows
 
-  // set the control key to use for multi-column sorting
-
-  this.multiSortKey = 'ctrl';
-
-  //array to hold top frozen rows
-
-  this.pinnedTopRowData = [];
-
+    this.pinnedTopRowData = [];
 
   }
 
   // function used in the html template code to get the years for the nested button menu (material)
 
-  getMenuObjKeys(): Array<MyType>{
+  getMenuObjKeys(): Array<MyType> {
     return Array.from(this.menuObj.keys());
 
   }
@@ -99,7 +74,7 @@ constructor(private hds: ORDSDataService) {
   sizeToFit() {
     this.gridApi.sizeColumnsToFit();
   }
-   // called from button click to autosize all collumns (ag-grid)
+  // called from button click to autosize all collumns (ag-grid)
 
   autoSize(params) {
     var allColumnIds = [];
@@ -109,7 +84,7 @@ constructor(private hds: ORDSDataService) {
     this.gridColumnApi.autoSizeColumns(allColumnIds);
   }
 
-// ag-grid callback? that gets called sometime after ngOnInit
+  // ag-grid callback? that gets called sometime after ngOnInit
 
   onGridReady(params) {
     let allColumnIds = [];
@@ -142,7 +117,7 @@ constructor(private hds: ORDSDataService) {
 
     };
 
-  // ag-grid call to save as csv
+    // ag-grid call to save as csv
 
     this.gridApi.exportDataAsCsv(params);
 
@@ -153,7 +128,7 @@ constructor(private hds: ORDSDataService) {
   isExternalFilterPresent (): boolean {
   return true;
 }
-*/ 
+*/
   doesExternalFilterPass = (node: RowNode): boolean => {
     return node.data.year == this.yearType && node.data.round == this.roundType;
   }
@@ -176,16 +151,16 @@ constructor(private hds: ORDSDataService) {
     this.yearType = newYear;
     this.roundType = newRound;
     this.changeYrRndBtn();
-    this.getYearRoundResultsData(newYear, newRound);
+    this.getYearRoundData(newYear, newRound);
   }
 
   // get all valid years/rounds to populate menu button
 
-   async getAllYearsRounds() {
+  async getAllYearsRounds() {
 
     let firstTime = true;
 
-    
+
     this.yearRoundData = await this.hds.getAllORDSData('YEARSROUNDSALL', 0, 500, 0, 0)
       .toPromise();
     for (let value of this.yearRoundData.items) {
@@ -198,16 +173,16 @@ constructor(private hds: ORDSDataService) {
         this.roundType = value.round;
         this.changeYrRndBtn();
       }
-     
+
       this.menuObj.set(value.year, this.menuObj.get(value.year).concat(value.round));
- 
+
     }
- 
- 
+
+
   }
 
 
-//  get all reults for all years/rounds (disabled)
+  //  get all reults for all years/rounds (disabled)
 
   /*
  async getAllRusultsData() {
@@ -233,9 +208,9 @@ constructor(private hds: ORDSDataService) {
 
 */
 
-// get row data for selected year and round
+  // get row data for selected year and round
 
-  async getYearRoundResultsData(year: number, round: number) {
+  async getYearRoundData(year: number, round: number) {
 
     this.tempData.hasMore = true;
     let offset: number = this.offset;
@@ -249,30 +224,33 @@ constructor(private hds: ORDSDataService) {
       this.tempData = await this.hds.getAllORDSData('RESULTSYEARROUND', offset, limit, year, round)
         .toPromise();
       if (offset > 0) {
-        this.resultsData.items = this.resultsData.items.concat(this.tempData.items);
+        this.screenData.items = this.screenData.items.concat(this.tempData.items);
       }
       else {
-        this.resultsData = this.tempData;
+        this.screenData = this.tempData;
       }
       offset += limit;
     }
     this.pinnedTopRowData = [];
     for (i = 0; i < 3; i++) {
-      this.pinnedTopRowData.push(this.resultsData.items[i]);
+      this.pinnedTopRowData.push(this.screenData.items[i]);
     }
-    this.resultsData.items.splice(0, 3, 0);
+    this.screenData.items.splice(0, 3, 0);
 
   }
 
-  
+
   async ngOnInit() {
 
-//    this.getAllRusultsData();
+    //set toolbar
+
+    this.toolBar = "Box Score Lurker Site - " + this.displayType;
+
+    //    this.getAllRusultsData();
     await this.getAllYearsRounds();
-    this.getYearRoundResultsData(this.yearType, this.roundType);
+    this.getYearRoundData(this.yearType, this.roundType);
 
   }
 
 
 }
-

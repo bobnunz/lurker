@@ -11,17 +11,10 @@ external filter disabled
     -->
 
 
-<mat-tab-group id="mainTabs" style="width: 100%; height: 100%">
 
-  <mat-tab label="Results">
-    <ng-template matTabContent>
 
-      <!--
-        <p-tabView id="mainTabs" >
-          <p-tabPanel id="mpTabs" header="Results" style="width: 100%; height: 100%">
 
-      <ng-template pTemplate="content">
-      -->
+
       <div style="height: 100%; padding-top: 155px; box-sizing: border-box;">
         <ag-grid-angular #agGrid
                          style="width: 100%; height: 100%"
@@ -33,7 +26,7 @@ external filter disabled
                          [suppressHorizontalScroll]="false"
                          rowSelection="multiple"
                          id="mygrid"
-                         [rowData]="resultsData.items"
+                         [rowData]="screenData.items"
                          [pinnedTopRowData]="pinnedTopRowData"
                          [columnDefs]="columnDefs"
                          (gridReady)="onGridReady($event)">
@@ -42,7 +35,7 @@ external filter disabled
       </div>
 
       <div style="position: absolute; top: 5px; left: 5px; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 13px;">
-        <mat-toolbar>Box Score Lurker Site - Results</mat-toolbar>
+        <mat-toolbar>{{toolBar}}</mat-toolbar>
 
         <div style="padding-bottom: 4px;">
 
@@ -63,6 +56,10 @@ external filter disabled
               </ng-container>
             </mat-menu>
 
+
+
+
+
           </label>
 
           <label style="margin-left: 20px;"> <button (click)="saveToCSV()">Export to CSV</button> </label>
@@ -71,8 +68,4 @@ external filter disabled
           <p>Year: {{yearType}}  Round: {{roundType}}</p>
         </div>
       </div>
-    </ng-template>
-  </mat-tab>
-
-</mat-tab-group>
 

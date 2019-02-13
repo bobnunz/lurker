@@ -29,6 +29,12 @@ export class ORDSDataService {
         break;
       }
 
+      case 'ROSTERSYEARROUND': {
+        this.urlStr = 'https://apex.oracle.com/pls/apex/census_epd/bxsc/getRostersByYearRound/' + year + '/' + round;
+        break;
+      }
+
+
       default: {
         //statements; 
         break;

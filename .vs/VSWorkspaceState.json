@@ -1,7 +1,11 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\bidding",
+    "\\src\\app\\main-page"
   ],
-  "SelectedNode": "\\src",
+  "SelectedNode": "\\src\\app\\bidding\\bidding.component.html",
   "PreviewInSolutionExplorer": false
 }

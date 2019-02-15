@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>Save {{data.filename}} to CSV file</h2>
+
+<mat-dialog-content>
+
+
+
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="File Name" [(ngModel)]="filename">
+    </mat-form-field>
+
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="mat-raised-button" (click)="closeSave()">Save</button>
+  <button class="mat-raised-button" (click)="closeCancel()">Cancel</button>
+</mat-dialog-actions>

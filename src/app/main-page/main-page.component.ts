@@ -12,8 +12,6 @@ export class MainPageComponent implements OnInit {
   columnDefsRosters: any[];
   defaultColDefRosters: any;
 
-  displayType: string;
-
   constructor() {
     this.initResultsTab();
     this.initRostersTab();
@@ -50,9 +48,7 @@ export class MainPageComponent implements OnInit {
 
     this.defaultColDefResults = { resizable: true, sortable: false, filter: false };
 
-    // set type of data to display
 
-    this.displayType = "Results";
   }
 
   initRostersTab() {
@@ -97,9 +93,7 @@ export class MainPageComponent implements OnInit {
 
     this.defaultColDefRosters = { resizable: true, sortable: false, filter: false };
 
-    // set type of data to display
 
-    this.displayType = "Rosters";
   }
 
   ngOnInit() {

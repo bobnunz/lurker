@@ -1,8 +1,13 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { AgGridNg2 } from 'ag-grid-angular';
 import { ORDSDataService } from '../ordsdata.service';
 import { ORDSData } from '../ordsdata';
+import {
+  MatDialog,
+  MatDialogConfig
+} from "@angular/material/dialog";
+import { DialogSaveToCSVComponent } from '../dialog-save-to-csv/dialog-save-to-csv.component';
+
 
 
 import { element } from 'protractor';
@@ -48,7 +53,7 @@ export class BiddingComponent implements OnInit {
   menuButtonText;
   toolBar: string;
 
-  constructor(private hds: ORDSDataService) {
+  constructor(private hds: ORDSDataService, private dialog: MatDialog) {
 
    
 
@@ -100,9 +105,24 @@ export class BiddingComponent implements OnInit {
     this.menuButtonText = "Year: " + this.yearType + " / Round: " + this.roundType;
   }
 
+  // open dialog for save to csv
+
+  openDialog() {
+
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = { filename: this.displayType };
+    let dialogRef = this.dialog.open(DialogSaveToCSVComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(value => {
+      if (value.length > 0) {
+        this.saveToCSV(value);
+      }
+    });
+  
+  }
+
   // save screen to cvs file from button click
 
-  saveToCSV() {
+  saveToCSV (filename: string) {
     let params = {
       skipHeader: true,
       columnGroups: false,
@@ -113,7 +133,7 @@ export class BiddingComponent implements OnInit {
       allColumns: true,
       onlySelected: false,
       suppressQuotes: false,
-      fileName: "nunz"
+      fileName: filename
 
     };
 
@@ -216,13 +236,24 @@ export class BiddingComponent implements OnInit {
     let offset: number = this.offset;
     let limit: number = this.limit;
     let i: number = 0;
-
+    let endI: number = 0;
+    let dataTypeFlag: string;
     let times: number = 0;
+
+    if (this.displayType === 'Results') {
+      dataTypeFlag = 'RESULTSYEARROUND';
+      endI = 3;
+    }
+    else if (this.displayType === 'Rosters') {
+      dataTypeFlag = 'ROSTERSYEARROUND';
+      endI = 2;
+    }
 
     while (this.tempData.hasMore && times < 10) {
       times += 1;
-      this.tempData = await this.hds.getAllORDSData('RESULTSYEARROUND', offset, limit, year, round)
+      this.tempData = await this.hds.getAllORDSData(dataTypeFlag, offset, limit, year, round)
         .toPromise();
+      
       if (offset > 0) {
         this.screenData.items = this.screenData.items.concat(this.tempData.items);
       }
@@ -231,11 +262,14 @@ export class BiddingComponent implements OnInit {
       }
       offset += limit;
     }
+
+    // freeze top rows
+
     this.pinnedTopRowData = [];
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < endI; i++) {
       this.pinnedTopRowData.push(this.screenData.items[i]);
     }
-    this.screenData.items.splice(0, 3, 0);
+    this.screenData.items.splice(0, endI, 0);
 
   }
 

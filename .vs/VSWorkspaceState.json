@@ -6,6 +6,6 @@
     "\\src\\app\\bidding",
     "\\src\\app\\main-page"
   ],
-  "SelectedNode": "\\src\\app\\bidding\\bidding.component.html",
+  "SelectedNode": "\\src\\app\\ordsdata.service.ts",
   "PreviewInSolutionExplorer": false
 }

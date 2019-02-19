@@ -4,8 +4,9 @@
     "\\src",
     "\\src\\app",
     "\\src\\app\\bidding",
+    "\\src\\app\\dialog-save-to-csv",
     "\\src\\app\\main-page"
   ],
-  "SelectedNode": "\\src\\app\\ordsdata.service.ts",
+  "SelectedNode": "\\src\\app\\main-page\\main-page.component.ts",
   "PreviewInSolutionExplorer": false
 }
